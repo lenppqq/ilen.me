@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postUrl, formatDate, categoryName } from '../lib';
+
+interface Props { posts: CollectionEntry<'posts'>[] }
+const { posts } = Astro.props;
+---
+<ul class="post-list">
+  {posts.map((p) => (
+    <li>
+      <a class="post-card" href={postUrl(p.data.slug)}>
+        {p.data.cover && <img src={p.data.cover} alt="" loading="lazy" />}
+        <div>
+          <h2>{p.data.title}</h2>
+          <p class="meta">
+            <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+            {p.data.categories.map((c) => <span class="chip">{categoryName(c)}</span>)}
+          </p>
+        </div>
+      </a>
+    </li>
+  ))}
+</ul>

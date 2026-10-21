@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, categorySlugs, categoryName } from '../../lib';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return categorySlugs.map((cat) => ({
+    params: { cat },
+    props: { posts: posts.filter((p) => p.data.categories.includes(cat)) },
+  }));
+}
+
+const { cat } = Astro.params;
+const { posts } = Astro.props;
+---
+<Base title={categoryName(cat)}>
+  <h1 class="archive-title">分类：{categoryName(cat)}</h1>
+  <PostList posts={posts} />
+</Base>

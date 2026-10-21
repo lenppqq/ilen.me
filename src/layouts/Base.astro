@@ -1,0 +1,48 @@
+---
+import { SITE } from '../config';
+import { categorySlugs, categoryName } from '../lib';
+import '../styles.css';
+
+interface Props { title?: string; description?: string }
+const { title, description = SITE.description } = Astro.props;
+const fullTitle = title ? `${title} | ${SITE.title}` : SITE.title;
+const path = decodeURI(Astro.url.pathname);
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/wp-content/uploads/2015/07/LenICOXII.png" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">
+          <img src="/wp-content/uploads/2014/10/ilenlogo0.png" alt="" width="40" height="40" />
+          <span>
+            <strong>{SITE.title}</strong>
+            <small>{SITE.description}</small>
+          </span>
+        </a>
+        <nav>
+          {categorySlugs.map((c) => (
+            <a href={`/category/${c}/`} aria-current={path === `/category/${c}/` ? 'page' : undefined}>
+              {categoryName(c)}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer wrap">
+      © 2014–{new Date().getFullYear()} {SITE.author} · <a href="/feed.xml">RSS</a>
+    </footer>
+  </body>
+</html>

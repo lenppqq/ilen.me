@@ -1,0 +1,52 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Giscus from '../components/Giscus.astro';
+import { getPosts, formatDate, categoryName } from '../lib';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.data.slug },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, date, categories, tags, cover, comments } = post.data;
+---
+<Base title={title}>
+  <article class="post">
+    <h1>{title}</h1>
+    <p class="meta">
+      <time datetime={date.toISOString()}>{formatDate(date)}</time>
+      {categories.map((c) => <a class="chip" href={`/category/${c}/`}>{categoryName(c)}</a>)}
+      {tags.map((t) => <a class="chip tag" href={`/tag/${t}/`}>#{t}</a>)}
+    </p>
+    {cover && !post.body?.includes(cover) && <img class="cover" src={cover} alt="" />}
+    <div class="content"><Content /></div>
+  </article>
+
+  <nav class="pager">
+    {older ? <a href={`/${older.data.slug}/`}>← {older.data.title}</a> : <span />}
+    {newer && <a href={`/${newer.data.slug}/`}>{newer.data.title} →</a>}
+  </nav>
+
+  <section class="comments">
+    {comments.length > 0 && (
+      <>
+        <h2>旧评论</h2>
+        <ol class="old-comments">
+          {comments.map((c) => (
+            <li>
+              <p class="meta"><strong>{c.author}</strong> · {formatDate(c.date)}</p>
+              <p>{c.content}</p>
+            </li>
+          ))}
+        </ol>
+      </>
+    )}
+    <Giscus />
+  </section>
+</Base>
