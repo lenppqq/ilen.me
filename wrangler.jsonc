@@ -1,0 +1,10 @@
+// 纯静态站：Cloudflare 直接托管 dist/，不需要 @astrojs/cloudflare 适配器。
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ilen-me",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
